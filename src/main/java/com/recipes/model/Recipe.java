@@ -1,14 +1,15 @@
 package com.recipes.model;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Recipe {
     private final String name;
     private final String description;
-    private final String ingredients;
-    private final String directions;
+    private final String[] ingredients;
+    private final String[] directions;
 
-    public Recipe(String name, String description, String ingredients, String directions) {
+    public Recipe(String name, String description, String[] ingredients, String[] directions) {
         this.name = name;
         this.description = description;
         this.ingredients = ingredients;
@@ -23,11 +24,11 @@ public class Recipe {
         return description;
     }
 
-    public String getIngredients() {
+    public String[] getIngredients() {
         return ingredients;
     }
 
-    public String getDirections() {
+    public String[] getDirections() {
         return directions;
     }
 
@@ -36,12 +37,15 @@ public class Recipe {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Recipe recipe = (Recipe) o;
-        return Objects.equals(name, recipe.name) && Objects.equals(description, recipe.description) && Objects.equals(ingredients, recipe.ingredients) && Objects.equals(directions, recipe.directions);
+        return Objects.equals(name, recipe.name) && Objects.equals(description, recipe.description) && Arrays.equals(ingredients, recipe.ingredients) && Arrays.equals(directions, recipe.directions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, ingredients, directions);
+        int result = Objects.hash(name, description);
+        result = 31 * result + Arrays.hashCode(ingredients);
+        result = 31 * result + Arrays.hashCode(directions);
+        return result;
     }
 
     @Override
@@ -49,8 +53,8 @@ public class Recipe {
         return "Recipe{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", ingredients='" + ingredients + '\'' +
-                ", directions='" + directions + '\'' +
+                ", ingredients=" + Arrays.toString(ingredients) +
+                ", directions=" + Arrays.toString(directions) +
                 '}';
     }
 }
