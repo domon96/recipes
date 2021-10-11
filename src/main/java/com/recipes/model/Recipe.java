@@ -1,12 +1,18 @@
 package com.recipes.model;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Arrays;
 import java.util.Objects;
 
 public class Recipe {
+    @NotEmpty
     private final String name;
+    @NotEmpty
     private final String description;
+    @Size(min = 1)
     private final String[] ingredients;
+    @Size(min = 1)
     private final String[] directions;
 
     public Recipe(String name, String description, String[] ingredients, String[] directions) {

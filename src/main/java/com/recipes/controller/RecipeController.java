@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class RecipeController {
     }
 
     @PostMapping("/recipe/new")
-    public Map<String, Integer> saveRecipe(@RequestBody Recipe recipe) {
+    public Map<String, Integer> saveRecipe(@Valid @RequestBody Recipe recipe) {
         recipes.add(recipe);
         return Map.of("id", ++recipeId);
     }
