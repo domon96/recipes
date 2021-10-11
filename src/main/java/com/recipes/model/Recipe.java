@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
@@ -22,9 +23,11 @@ public class Recipe {
     private String name;
     @NotBlank
     private String description;
+    @NotNull
     @Size(min = 1)
     @ElementCollection
     private List<String> ingredients;
+    @NotNull
     @Size(min = 1)
     @ElementCollection
     private List<String> directions;
