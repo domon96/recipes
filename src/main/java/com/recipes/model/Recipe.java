@@ -1,25 +1,46 @@
 package com.recipes.model;
 
-import javax.validation.constraints.NotEmpty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class Recipe {
-    @NotEmpty
-    private final String name;
-    @NotEmpty
-    private final String description;
-    @Size(min = 1)
-    private final String[] ingredients;
-    @Size(min = 1)
-    private final String[] directions;
 
-    public Recipe(String name, String description, String[] ingredients, String[] directions) {
+    @Id
+    @GeneratedValue
+    @JsonIgnore
+    private int id;
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String description;
+    @Size(min = 1)
+    @ElementCollection
+    private List<String> ingredients;
+    @Size(min = 1)
+    @ElementCollection
+    private List<String> directions;
+
+    public Recipe() {
+    }
+
+    public Recipe(String name, String description, List<String> ingredients, List<String> directions) {
         this.name = name;
         this.description = description;
         this.ingredients = ingredients;
         this.directions = directions;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -30,11 +51,11 @@ public class Recipe {
         return description;
     }
 
-    public String[] getIngredients() {
+    public List<String> getIngredients() {
         return ingredients;
     }
 
-    public String[] getDirections() {
+    public List<String> getDirections() {
         return directions;
     }
 
@@ -43,15 +64,12 @@ public class Recipe {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Recipe recipe = (Recipe) o;
-        return Objects.equals(name, recipe.name) && Objects.equals(description, recipe.description) && Arrays.equals(ingredients, recipe.ingredients) && Arrays.equals(directions, recipe.directions);
+        return id == recipe.id && Objects.equals(name, recipe.name) && Objects.equals(description, recipe.description) && Objects.equals(ingredients, recipe.ingredients) && Objects.equals(directions, recipe.directions);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(name, description);
-        result = 31 * result + Arrays.hashCode(ingredients);
-        result = 31 * result + Arrays.hashCode(directions);
-        return result;
+        return Objects.hash(id, name, description, ingredients, directions);
     }
 
     @Override
@@ -59,8 +77,8 @@ public class Recipe {
         return "Recipe{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", ingredients=" + Arrays.toString(ingredients) +
-                ", directions=" + Arrays.toString(directions) +
+                ", ingredients=" + ingredients +
+                ", directions=" + directions +
                 '}';
     }
 }
