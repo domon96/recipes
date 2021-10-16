@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +23,9 @@ public class Recipe {
     @NotBlank
     private String name;
     @NotBlank
+    private String category;
+    private LocalDateTime date;
+    @NotBlank
     private String description;
     @NotNull
     @Size(min = 1)
@@ -33,13 +37,7 @@ public class Recipe {
     private List<String> directions;
 
     public Recipe() {
-    }
-
-    public Recipe(String name, String description, List<String> ingredients, List<String> directions) {
-        this.name = name;
-        this.description = description;
-        this.ingredients = ingredients;
-        this.directions = directions;
+        updateDate();
     }
 
     public int getId() {
@@ -48,6 +46,14 @@ public class Recipe {
 
     public String getName() {
         return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
     }
 
     public String getDescription() {
@@ -62,23 +68,34 @@ public class Recipe {
         return directions;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void updateDate() {
+        date = LocalDateTime.now();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Recipe recipe = (Recipe) o;
-        return id == recipe.id && Objects.equals(name, recipe.name) && Objects.equals(description, recipe.description) && Objects.equals(ingredients, recipe.ingredients) && Objects.equals(directions, recipe.directions);
+        return id == recipe.id && Objects.equals(name, recipe.name) && Objects.equals(category, recipe.category) && Objects.equals(date, recipe.date) && Objects.equals(description, recipe.description) && Objects.equals(ingredients, recipe.ingredients) && Objects.equals(directions, recipe.directions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, ingredients, directions);
+        return Objects.hash(id, name, category, date, description, ingredients, directions);
     }
 
     @Override
     public String toString() {
         return "Recipe{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", category='" + category + '\'' +
+                ", date=" + date +
                 ", description='" + description + '\'' +
                 ", ingredients=" + ingredients +
                 ", directions=" + directions +

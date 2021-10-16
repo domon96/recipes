@@ -5,6 +5,7 @@ import com.recipes.repository.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,5 +28,13 @@ public class RecipeService {
 
     public void deleteRecipeById(int id) {
         recipeRepository.deleteById(id);
+    }
+
+    public List<Recipe> findRecipesByCategory(String category) {
+        return recipeRepository.findAllByCategoryIgnoreCaseOrderByDateDesc(category);
+    }
+
+    public List<Recipe> findRecipesContainingName(String name) {
+        return recipeRepository.findAllByNameContainingIgnoreCaseOrderByDateDesc(name);
     }
 }
