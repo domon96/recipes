@@ -2,10 +2,7 @@ package com.recipes.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,7 +14,7 @@ import java.util.Objects;
 public class Recipe {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private int id;
     @NotBlank
@@ -35,6 +32,10 @@ public class Recipe {
     @Size(min = 1)
     @ElementCollection
     private List<String> directions;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User author;
 
     public Recipe() {
         updateDate();
@@ -68,12 +69,20 @@ public class Recipe {
         return directions;
     }
 
+    public User getAuthor() {
+        return author;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
 
     public void updateDate() {
         date = LocalDateTime.now();
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     @Override

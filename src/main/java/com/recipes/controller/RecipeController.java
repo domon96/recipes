@@ -1,11 +1,13 @@
 package com.recipes.controller;
 
 import com.recipes.model.Recipe;
+import com.recipes.model.User;
 import com.recipes.service.RecipeService;
+import com.recipes.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,10 +20,12 @@ import java.util.Optional;
 public class RecipeController {
 
     private final RecipeService recipeService;
+    private final UserService userService;
 
     @Autowired
-    public RecipeController(RecipeService recipeService) {
+    public RecipeController(RecipeService recipeService, UserService userService) {
         this.recipeService = recipeService;
+        this.userService = userService;
     }
 
     @GetMapping("/recipe/{id}")
@@ -35,40 +39,54 @@ public class RecipeController {
     }
 
     @PostMapping("/recipe/new")
-    public Map<String, Integer> saveRecipe(@Valid @RequestBody Recipe recipe) {
+    public Map<String, Integer> saveRecipe(Authentication auth, @Valid @RequestBody Recipe recipe) {
+
+        final User author = userService.findUserByEmail(auth.getName());
+        recipe.setAuthor(author);
 
         final Recipe savedRecipe = recipeService.save(recipe);
         return Map.of("id", savedRecipe.getId());
     }
 
     @DeleteMapping("/recipe/{id}")
-    public ResponseEntity<Void> deleteRecipe(@PathVariable int id) {
+    public ResponseEntity<Void> deleteRecipe(Authentication auth, @PathVariable int id) {
 
-        try {
-            recipeService.deleteRecipeById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (EmptyResultDataAccessException e) {
+        final Optional<Recipe> recipe = recipeService.findRecipeById(id);
+        if (recipe.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        final User loggedUser = userService.findUserByEmail(auth.getName());
+        if (loggedUser.equals(recipe.get().getAuthor())) {
+            recipeService.deleteRecipeById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
     }
 
     @PutMapping("/recipe/{id}")
-    public ResponseEntity<Void> updateRecipe(@PathVariable int id,
-                                             @Valid @RequestBody Recipe newRecipe) {
+    public ResponseEntity<Void> updateRecipe(Authentication auth, @PathVariable int id, @Valid @RequestBody Recipe newRecipe) {
 
         final Optional<Recipe> oldRecipe = recipeService.findRecipeById(id);
         if (oldRecipe.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        newRecipe.setId(id);
-        newRecipe.updateDate();
-        recipeService.save(newRecipe);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        final User loggedUser = userService.findUserByEmail(auth.getName());
+        if (oldRecipe.get().getAuthor().equals(loggedUser)) {
+            newRecipe.setId(id);
+            newRecipe.updateDate();
+            recipeService.save(newRecipe);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/recipe/search")
-    public ResponseEntity<List<Recipe>> get(@RequestParam(required = false) String category,
-                                            @RequestParam(required = false) String name) {
+    public ResponseEntity<List<Recipe>> get(@RequestParam(required = false) String category, @RequestParam(required = false) String name) {
 
         if ((category == null && name == null) || (category != null && name != null)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -79,5 +97,16 @@ public class RecipeController {
             final List<Recipe> recipesContainingName = recipeService.findRecipesContainingName(name);
             return new ResponseEntity<>(recipesContainingName, HttpStatus.OK);
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@Valid @RequestBody User user) {
+
+        if (userService.findUserByEmail(user.getEmail()) != null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        userService.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
