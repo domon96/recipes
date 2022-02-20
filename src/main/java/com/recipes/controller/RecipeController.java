@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/api")
 public class RecipeController {
 
@@ -99,14 +101,23 @@ public class RecipeController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody User user) {
+    @GetMapping("/register")
+    public String register(User user) {
+        return "add-user";
+    }
+
+    @PostMapping("/adduser")
+    public String register(@ModelAttribute("user") @Valid User user, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return "add-user";
+        }
 
         if (userService.findUserByEmail(user.getEmail()) != null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return "add-user";
         }
 
         userService.save(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return "home";
     }
 }
