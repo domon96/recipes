@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/api")
 public class RecipeController {
 
     private final RecipeService recipeService;
@@ -28,6 +27,11 @@ public class RecipeController {
     public RecipeController(RecipeService recipeService, UserService userService) {
         this.recipeService = recipeService;
         this.userService = userService;
+    }
+
+    @GetMapping("/")
+    public String home() {
+        return "home";
     }
 
     @GetMapping("/recipe/{id}")
