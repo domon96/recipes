@@ -36,7 +36,12 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .and()
-                .httpBasic();
+                .httpBasic()
+                .and()
+                .formLogin()
+                .loginPage("/login").permitAll()
+                .and()
+                .logout().permitAll();
     }
 
     @Bean
