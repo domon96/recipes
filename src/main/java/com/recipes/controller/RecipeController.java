@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -103,25 +102,5 @@ public class RecipeController {
             final List<Recipe> recipesContainingName = recipeService.findRecipesContainingName(name);
             return new ResponseEntity<>(recipesContainingName, HttpStatus.OK);
         }
-    }
-
-    @GetMapping("/register")
-    public String register(User user) {
-        return "add-user";
-    }
-
-    @PostMapping("/adduser")
-    public String register(@ModelAttribute("user") @Valid User user, BindingResult result) {
-
-        if (result.hasErrors()) {
-            return "add-user";
-        }
-
-        if (userService.findUserByEmail(user.getEmail()) != null) {
-            return "add-user";
-        }
-
-        userService.save(user);
-        return "home";
     }
 }

@@ -18,8 +18,8 @@ public class User {
     private int id;
     @Email(regexp = ".+@.+\\..+")
     private String email;
-    @NotBlank
-    @Size(min = 8)
+    @NotBlank()
+    @Size(min = 8, message = "has to contain at least 8 characters")
     private String password;
     @JsonIgnore
     @OneToMany(mappedBy = "author")
