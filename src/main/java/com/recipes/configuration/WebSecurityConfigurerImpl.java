@@ -31,8 +31,8 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .mvcMatchers("/api/recipe/**").authenticated()
-                .mvcMatchers("/api/register").permitAll()
+                .mvcMatchers("/recipe/**").authenticated()
+                .mvcMatchers("/register").permitAll()
                 .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()

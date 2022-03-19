@@ -43,6 +43,6 @@ public class RegisterController {
         userService.save(user);
         securityService.autoLogin(user.getEmail(), password);
 
-        return "home";
+        return "redirect:/";
     }
 }
